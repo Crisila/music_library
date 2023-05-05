@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 // TODO: import search bar and gallery
 import SearchBar from './components/SearchBar';
 import Gallery from './components/Gallery';
+import { DataContext } from './contexts/DataContext';
+// not exporting a default value, that's why we can't use the name like line 4. Needed to structure it out.
 
 import './App.css';
 
@@ -29,9 +31,14 @@ function App() {
 
   return (
     <div className="App">
-      <SearchBar setSearch={ setSearch } />
-      { message }
-      <Gallery data={ data } />
+      
+      <DataContext.Provider value={ { setSearch, data } }>
+        <SearchBar />
+        { message } 
+        <Gallery/>
+      </DataContext.Provider>
+
+      
     </div>
   );
 }

@@ -1,10 +1,14 @@
 import { useEffect, useState, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
 // TODO: import search bar and gallery
 import SearchBar from './components/SearchBar';
 import Gallery from './components/Gallery';
 import { DataContext } from './contexts/DataContext';
 // not exporting a default value, that's why we can't use the name like line 4. Needed to structure it out.
 import { SearchContext } from './contexts/SearchContext';
+import AlbumView from './components/AlbumView';
+import ArtistView from './components/ArtistView';
 
 import './App.css';
 
@@ -13,7 +17,7 @@ function App() {
   let [data, setData] = useState([]);
   let searchInput = useRef('')
 
- 
+
 
   const handleSearch = async searchTerm => {
     if (!searchTerm) return
@@ -32,20 +36,31 @@ function App() {
   return (
     <div className="App">
       {/* good to group context together by their function */}
-      <SearchContext.Provider value={{
-        term: searchInput,
-        handleSearch
+      {message}
+      <Router>
+        <Routes>
+          <Route path='/' element={
+            <>
+              <SearchContext.Provider value={{
+                term: searchInput,
+                handleSearch
 
-      }}>
-        <SearchBar />
-      </SearchContext.Provider>
+              }}>
+                <SearchBar />
+              </SearchContext.Provider>
 
-      <DataContext.Provider value={{ data }}>
+              <DataContext.Provider value={{ data }}>
 
-        {message}
-        <Gallery />
-      </DataContext.Provider>
+                {message}
+                <Gallery />
+              </DataContext.Provider>
+            </>
 
+          } />
+          <Route path='/album/:id' element={ <AlbumView/> } />
+          <Route path='/artist/:id' element={ <ArtistView/>}  />
+        </Routes>
+      </Router>
 
     </div>
   );

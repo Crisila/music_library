@@ -1,24 +1,52 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 
-export default function ArtistView(){
-    const { id } = useParams()
-    const [artistData, setArtistData] = useState([])
-    useEffect (() => {
-        let fetchData = async () => {
-            debugger;
-            const response = await fetch(`https://itunes.apple.com/search?term=${id}`);
+
+export default function ArtistView() {
+    const { id } = useParams();
+    const [artistData, setArtistData] = useState([]);
+    const navigate = useNavigate();
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const API_URL = `http://localhost:4000/album/${id}`;
+            const response = await fetch(API_URL);
             const resData = await response.json();
-            setArtistData(resData);
-            
+            setArtistData(resData.results);
         }
         fetchData();
-    }, [id])
+    });
+
+    const navButtons = () => {
+        return (
+            <div>
+                <button type="button" onClick={ () => navigate(-1) }>Back</button>
+                |
+                <button type="button" onClick={ () => navigate('/') }>Home</button>
+            </div>
+        )
+    }
+
+    const justAlbums = artistData.filter(entry => entry.collectionType === 'Album')
+
+    //need somthing that will render the albums
+    const renderAlbums = justAlbums.map((album, index) => {
+        return (
+            <div key={index}>
+                <Link to={ `/album/${album.collectionId}` }>
+                    <p>{album.collectionName}</p>
+                </Link>
+                
+            </div>
+        )
+    });
 
     return (
         <div>
-            <h2>The ID passed was: { id } </h2>
-            <p>Artist Data goes here</p>
+            { artistData.length ? <h2>{artistData[0]?.artistName} </h2> : <h2>Loading...</h2> } 
+            { navButtons() }
+            {renderAlbums}
         </div>
     )
 }
